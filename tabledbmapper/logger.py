@@ -8,10 +8,10 @@ class Logger:
     # message info prefix
     _prefix = "Currently executing SQL>>>"
 
-    def print_info(self, msg, parameters):
+    def print_info(self, sql, parameters):
         """
         Print info message
-        :param msg: Executing SQL statement
+        :param sql: Executing SQL statement
         :param parameters: parameters
         """
         pass
