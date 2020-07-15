@@ -1,3 +1,5 @@
+from tabledbmapper.logger import Logger
+from tabledbmapper.manager.manager import Manager
 
 
 class DAO:
@@ -16,14 +18,14 @@ class DAO:
     _insert = "Insert"
     _delete = "Delete"
 
-    def __init__(self, manager):
+    def __init__(self, manager: Manager):
         """
         Initialize Dao layer
         :param manager: Database manager
         """
         self._manager = manager
 
-    def set_logger(self, logger):
+    def set_logger(self, logger: Logger):
         """
         Set Logger
         :param logger: log printing
@@ -85,3 +87,9 @@ class DAO:
         """
         _, number = self._manager.exec(self._delete, parameter)
         return number
+
+    def commit(self):
+        """
+        Submit query modification
+        """
+        self._manager.commit()

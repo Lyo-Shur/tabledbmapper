@@ -1,3 +1,5 @@
+from tabledbmapper.engine import TemplateEngine
+from tabledbmapper.logger import Logger
 
 
 class Manager:
@@ -6,7 +8,7 @@ class Manager:
     # XML profile properties
     xml_config = None
 
-    def __init__(self, template_engine, xml_config):
+    def __init__(self, template_engine: TemplateEngine, xml_config: dict):
         """
         Initialize Manager
         :param template_engine: SQL template execution engine
@@ -15,7 +17,7 @@ class Manager:
         self._template_engine = template_engine
         self.xml_config = xml_config
 
-    def set_logger(self, logger):
+    def set_logger(self, logger: Logger):
         """
         Set Logger
         :param logger: log printing
@@ -24,7 +26,7 @@ class Manager:
         self._template_engine.set_logger(logger)
         return self
 
-    def query(self, key, parameter):
+    def query(self, key: str, parameter):
         """
         Query result set
         :param key: SQL alias
@@ -47,7 +49,7 @@ class Manager:
             data.append(item)
         return data
 
-    def count(self, key, parameter):
+    def count(self, key: str, parameter):
         """
         Query quantity
         :param key: SQL alias
@@ -59,7 +61,7 @@ class Manager:
         # Implementation of SQL
         return self._template_engine.count(sql_template, parameter)
 
-    def exec(self, key, parameter):
+    def exec(self, key: str, parameter):
         """
         Implementation of SQL
         :param key: SQL alias
@@ -70,3 +72,9 @@ class Manager:
         sql_template = self.xml_config["sqls"][key]
         # Implementation of SQL
         return self._template_engine.exec(sql_template, parameter)
+
+    def commit(self):
+        """
+        Submit query modification
+        """
+        self._template_engine.commit()

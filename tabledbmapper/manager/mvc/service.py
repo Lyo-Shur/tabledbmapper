@@ -69,3 +69,9 @@ class Service:
         :return: Delete result
         """
         return self._dao.delete(parameter)
+
+    def commit(self):
+        """
+        Submit query modification
+        """
+        self._dao.commit()
