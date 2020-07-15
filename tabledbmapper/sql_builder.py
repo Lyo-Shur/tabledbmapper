@@ -7,7 +7,7 @@ def builder(template: str, parameter):
     Build SQL string
     :param template: Init jinja2 template
     :param parameter: Parameter
-    :return: Jinja2 template return
+    :return: render result and parameter
     """
     # Build template
     template = Template(_parsing(template))
