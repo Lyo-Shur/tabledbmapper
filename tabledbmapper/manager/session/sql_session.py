@@ -35,6 +35,7 @@ class SQLSession:
 
     def __exit__(self, exc_type, exc_value, traceback):
         self._index = -1
+        self._engine.destruction()
         self._engine = None
         self._session_pool.give_back_session(self._index)
         self._session_pool = None

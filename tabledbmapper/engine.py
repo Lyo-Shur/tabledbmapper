@@ -85,6 +85,8 @@ class TemplateEngine:
     SQL template execution engine
     Using the jinja2 template engine
     """
+    _alive = None
+
     # lock
     _lock = None
 
@@ -108,6 +110,7 @@ class TemplateEngine:
         :param conn: database conn
         :param auto_commit: Whether to submit automatically
         """
+        self._alive = True
         self._lock = Lock()
         self._conn_handle = conn_handle
         self._execute_engine = execute_engine
@@ -140,6 +143,7 @@ class TemplateEngine:
         """
         # lock
         self._lock.acquire()
+        self.survival_checks()
         # test conn
         self._conn_handle.ping(self._conn)
         # render and execute
@@ -160,6 +164,7 @@ class TemplateEngine:
         """
         # lock
         self._lock.acquire()
+        self.survival_checks()
         # test conn
         self._conn_handle.ping(self._conn)
         # render and execute
@@ -180,6 +185,7 @@ class TemplateEngine:
         """
         # lock
         self._lock.acquire()
+        self.survival_checks()
         # test conn
         self._conn_handle.ping(self._conn)
         # render and execute
@@ -190,3 +196,22 @@ class TemplateEngine:
         # release
         self._lock.release()
         return lastrowid, rowcount
+
+    def survival_checks(self):
+        """
+        Survival checks
+        """
+        if not self._alive:
+            raise Exception("The session has been destroyed")
+
+    def destruction(self):
+        """
+        Self-destruct to avoid crossing the line
+        """
+        self._alive = False
+        # self._lock = None
+        self._conn_handle = None
+        self._execute_engine = None
+        self._auto_commit_function = None
+        self._conn = None
+        self._logger = None
