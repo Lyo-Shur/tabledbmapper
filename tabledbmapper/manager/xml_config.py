@@ -1,7 +1,11 @@
+from typing import Dict, Any
 from xml.dom.minidom import parse, parseString
 
 
-def parse_config_from_string(xml_string):
+XmlConfig = Dict
+
+
+def parse_config_from_string(xml_string: str) -> XmlConfig:
     """
     Parsing XML configuration string
     :param xml_string: XML configuration string
@@ -10,7 +14,7 @@ def parse_config_from_string(xml_string):
     return _parse_config_from_doc(parseString(xml_string))
 
 
-def parse_config_from_file(file_path):
+def parse_config_from_file(file_path: str) -> XmlConfig:
     """
     Parsing XML configuration file
     :param file_path: Profile path
@@ -19,7 +23,7 @@ def parse_config_from_file(file_path):
     return _parse_config_from_doc(parse(file_path))
 
 
-def _parse_config_from_doc(doc):
+def _parse_config_from_doc(doc: Any) -> XmlConfig:
     """
     Parsing DOC documents
     :param doc: Doc document

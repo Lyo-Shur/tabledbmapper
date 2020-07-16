@@ -1,3 +1,6 @@
+from typing import Dict
+
+from tabledbmapper.engine import QueryResult, CountResult
 from tabledbmapper.logger import Logger
 from tabledbmapper.manager.manager import Manager
 
@@ -34,7 +37,7 @@ class DAO:
         self._manager.set_logger(logger)
         return self
 
-    def get_list(self, parameter):
+    def get_list(self, parameter: Dict) -> QueryResult:
         """
         Get data list
         :param parameter: Search parameters
@@ -42,7 +45,7 @@ class DAO:
         """
         return self._manager.query(self._get_list, parameter)
 
-    def get_count(self, parameter):
+    def get_count(self, parameter: Dict) -> CountResult:
         """
         Quantity acquisition
         :param parameter: Search parameters
@@ -50,7 +53,7 @@ class DAO:
         """
         return self._manager.count(self._get_count, parameter)
 
-    def get_model(self, parameter):
+    def get_model(self, parameter: Dict) -> Dict:
         """
         Get record entity
         :param parameter: Search parameters
@@ -58,10 +61,10 @@ class DAO:
         """
         list_dict = self._manager.query(self._get_model, parameter)
         if len(list_dict) == 0:
-            return None
+            return {}
         return list_dict[0]
 
-    def update(self, parameter):
+    def update(self, parameter: Dict) -> int:
         """
         Update record
         :param parameter: Update data
@@ -70,7 +73,7 @@ class DAO:
         _, number = self._manager.exec(self._update, parameter)
         return number
 
-    def insert(self, parameter):
+    def insert(self, parameter: Dict) -> int:
         """
         insert record
         :param parameter: insert data
@@ -79,7 +82,7 @@ class DAO:
         number, _ = self._manager.exec(self._insert, parameter)
         return number
 
-    def delete(self, parameter):
+    def delete(self, parameter: Dict) -> int:
         """
         Delete data
         :param parameter: Delete data
@@ -87,9 +90,3 @@ class DAO:
         """
         _, number = self._manager.exec(self._delete, parameter)
         return number
-
-    def commit(self):
-        """
-        Submit query modification
-        """
-        self._manager.commit()

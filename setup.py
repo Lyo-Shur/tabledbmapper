@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
     setup(
         name="tabledbmapper",
-        version="0.0.3",
+        version="0.0.8",
         description=(
             "General query tool class of relational database."
         ),

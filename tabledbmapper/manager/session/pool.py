@@ -1,107 +1,126 @@
 from threading import Lock
 
+from tabledbmapper.logger import DefaultLogger
 
-from tabledbmapper.engine import Engine
+from tabledbmapper.engine import ConnHandle, ExecuteEngine, TemplateEngine
 from tabledbmapper.manager.session.sql_session import SQLSession
-
-
-# Session Pool Init Config
-class SessionInit:
-
-    # conn
-    _conn = None
-
-    # Lazy loading
-    lazy_init = True
-
-    # Maximum number of connections
-    max_conn_number = 10
-
-    def init_engine(self):
-        """
-        Gets the database connection method
-        """
-        return Engine(self._conn)
-
-    def test_engine(self, engine: Engine):
-        """
-        Test whether the connection is available, and reconnect
-        :param engine: database sql engine
-        """
-        pass
-
-
-_lock = Lock()
 
 
 class SessionPool:
 
+    # _lock
+    _lock = None
+
+    # conn handle
+    _conn_handle = None
+    _execute_engine = None
+
     # Current number of connections
-    _number = 0
+    _lazy_init = None
+    _max_conn_number = 0
+
+    _logger = None
 
     # conn engines
-    _engines = None
+    _conns = None
 
     # use flag
     _flags = None
 
-    # SessionInit
-    _sessionInit = None
-
-    def __init__(self, session_init: SessionInit):
+    def __init__(self, conn_handle: ConnHandle, execute_engine: ExecuteEngine,
+                 lazy_init=True, max_conn_number=10, logger=DefaultLogger()):
         """
         Init session pool
-        :param session_init: SessionInit
+        :param conn_handle: ConnHandle
+        :param execute_engine: ExecuteEngine
+        :param lazy_init: lazy_init
+        :param max_conn_number: max_conn_number
+        :param logger: Logger
         """
-        # save session init model
-        self._sessionInit = session_init
+        # lock
+        self._lock = Lock()
+        # conn handle
+        self._conn_handle = conn_handle
+        self._execute_engine = execute_engine
+
+        self._lazy_init = lazy_init
+        self._max_conn_number = max_conn_number
+
+        self._logger = logger
+
         # db conn
-        self._engines = []
+        self._conns = []
         # used conn
         self._flags = []
         # lazy loading
-        if not session_init.lazy_init:
-            self._number = session_init.max_conn_number
-            for i in range(self._number):
-                self._engines.append(session_init.init_engine())
+        if not lazy_init:
+            for i in range(max_conn_number):
+                self._conns.append(self._conn_handle.connect())
                 self._flags.append(i)
 
-    def get_session(self, auto_commit=True):
+    def get_session(self, auto_commit=True) -> SQLSession:
         """
         Get SQL Session from Session Pool
         :param auto_commit: auto_commit
         :return: SQL Session
         """
-        _lock.acquire()
+        self._lock.acquire()
         while True:
-            length = len(self._flags)
+            flags_length = len(self._flags)
+            conns_length = len(self._conns)
             # When connections are exhausted and 
             # the maximum number of connections is not exceeded
-            if length == 0 and len(self._engines) < self._number:
-                # init new engine
-                engine = self._sessionInit.init_engine()
-                engine.set_auto_commit(auto_commit)
-                self._engines.append(engine)
-                print("create")
-                _lock.release()
-                return SQLSession(self, len(self._engines), engine)
-            if length > 0:
-                index = self._flags[0]
-                # get engine
-                engine = self._engines[index]
-                engine.set_auto_commit(auto_commit)
-                # test engine
-                self._sessionInit.test_engine(engine)
-                # set use flag
-                self._flags = self._flags[1:]
-                print("have")
-                _lock.release()
-                return SQLSession(self, index, engine)
+            if flags_length == 0 and conns_length < self._max_conn_number:
+                # init new conn
+                conn = self._conn_handle.connect()
+                self._conns.append(conn)
 
-    def give_back_session(self, index):
+                # create template engine
+                template_engine = TemplateEngine(
+                    self._conn_handle,
+                    self._execute_engine,
+                    conn,
+                    auto_commit
+                )
+                template_engine.set_logger(self._logger)
+                self._lock.release()
+                return SQLSession(self, conns_length, template_engine)
+            if flags_length > 0:
+                # set use flag
+                index = self._flags[0]
+                self._flags = self._flags[1:]
+
+                # get conn
+                conn = self._conns[index]
+
+                # create template engine
+                template_engine = TemplateEngine(
+                    self._conn_handle,
+                    self._execute_engine,
+                    conn,
+                    auto_commit
+                )
+                template_engine.set_logger(self._logger)
+                self._lock.release()
+                return SQLSession(self, index, template_engine)
+
+    def commit_session(self, index: int):
+        """
+        Commit session
+        :param index: The index of the session in the Session pool
+        """
+        self._conn_handle.commit(self._conns[index])
+
+    def rollback_session(self, index: int):
+        """
+        Commit session
+        :param index: The index of the session in the Session pool
+        """
+        self._conn_handle.rollback(self._conns[index])
+
+    def give_back_session(self, index: int):
         """
         Return the session to the session pool
         :param index: The index of the session in the Session pool
         """
-        print(index)
         self._flags.append(index)

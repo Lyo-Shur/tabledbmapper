@@ -1,3 +1,4 @@
+from typing import Dict, Any
 
 
 class Logger:
@@ -8,7 +9,7 @@ class Logger:
     # message info prefix
     _prefix = "Currently executing SQL>>>"
 
-    def print_info(self, sql: str, parameters):
+    def print_info(self, sql: str, parameters: Any):
         """
         Print info message
         :param sql: Executing SQL statement
@@ -16,7 +17,7 @@ class Logger:
         """
         pass
 
-    def print_error(self, exception):
+    def print_error(self, exception: Any):
         """
         Print error message
         :param exception: exception
@@ -28,7 +29,7 @@ class DefaultLogger(Logger):
     """
     Default log printing
     """
-    def print_info(self, msg: str, parameters):
+    def print_info(self, msg: str, parameters: Dict):
         """
         Print info message
         :param msg: Executing SQL statement
@@ -36,7 +37,7 @@ class DefaultLogger(Logger):
         """
         print(self._prefix, msg, parameters)
 
-    def print_error(self, exception):
+    def print_error(self, exception: Any):
         """
         Print error message
         :param exception: exception

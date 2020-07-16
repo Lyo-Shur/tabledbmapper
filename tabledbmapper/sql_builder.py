@@ -1,8 +1,12 @@
+from typing import Dict, Tuple
+
 from jinja2 import Template
 import re
 
+SQLRenderResult = Tuple[str, list]
 
-def builder(template: str, parameter):
+
+def builder(template: str, parameter: Dict) -> SQLRenderResult:
     """
     Build SQL string
     :param template: Init jinja2 template
@@ -24,7 +28,7 @@ def builder(template: str, parameter):
     return result, parameters
 
 
-def _parsing(template):
+def _parsing(template: str) -> str:
     """
     Extend the native jinja2 syntax to support parameterized queries
     :param template: Original string
@@ -39,7 +43,7 @@ def _parsing(template):
     return result
 
 
-def _extract_parameters(template):
+def _extract_parameters(template: str) -> Tuple[str, list]:
     """
     Parameter extraction
     :param template: Template of parameters to be extracted
@@ -57,7 +61,7 @@ def _extract_parameters(template):
     return result, parameters
 
 
-def _trim(template):
+def _trim(template: str) -> str:
     """
     Cleaning SQL statements
     :param template: SQL statement to be cleaned
@@ -74,7 +78,7 @@ def _trim(template):
     return template
 
 
-def _deal_with_update(template):
+def _deal_with_update(template: str) -> str:
     """
     For the patch of UPDATE statement, avoid redundant commas in update set
     :param template: Template
@@ -96,7 +100,7 @@ def _deal_with_update(template):
     return template
 
 
-def _deal_with_limit(template, parameters):
+def _deal_with_limit(template: str, parameters: list) -> list:
     """
     Handle limit patch
     :param template: Template
