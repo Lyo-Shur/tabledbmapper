@@ -26,7 +26,7 @@ class SQLSessionFactory:
         :param max_conn_number: max_conn_number
         :param logger: Logger
         """
-        self._session_pool = SessionPool(conn_builder, conn_handle, execute_engine, lazy_init, max_conn_number)
+        self._session_pool = SessionPool(conn_builder, conn_handle, execute_engine, lazy_init, max_conn_number, logger)
         self._logger = logger
 
     def open_session(self, handle: Callable[[SQLSession], None]) -> Any:
@@ -102,5 +102,6 @@ class SQLSessionFactoryBuild:
             self._conn_handle,
             self._execute_engine,
             self._lazy_init,
-            self._max_conn_number
+            self._max_conn_number,
+            self._logger
         )

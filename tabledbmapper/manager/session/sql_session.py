@@ -1,3 +1,5 @@
+from tabledbmapper.logger import Logger
+
 from tabledbmapper.engine import TemplateEngine
 from tabledbmapper.manager.manager import Manager
 from tabledbmapper.manager.mvc.dao import DAO
@@ -53,6 +55,15 @@ class SQLSession:
             self._session_pool.give_back_session(self._index)
             self._session_pool = None
         self._index = -1
+
+    def set_logger(self, logger: Logger):
+        """
+        Set Logger
+        :param logger: log printing
+        :return self
+        """
+        self._engine.set_logger(logger)
+        return self
 
     def service(self, config: dict) -> Service:
         """
