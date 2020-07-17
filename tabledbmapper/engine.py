@@ -12,13 +12,16 @@ CountResult = int
 ExecResult = Tuple[int, int]
 
 
-class ConnHandle:
+class ConnBuilder:
 
     @abstractmethod
     def connect(self) -> Any:
         """
         Gets the database connection method
         """
+
+
+class ConnHandle:
 
     @abstractmethod
     def ping(self, conn: Any):
