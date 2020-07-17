@@ -1,5 +1,3 @@
-from typing import Any
-
 from tabledbmapper.engine import TemplateEngine
 from tabledbmapper.manager.manager import Manager
 from tabledbmapper.manager.mvc.dao import DAO
@@ -18,39 +16,43 @@ class SQLSession:
     # sql engine
     _engine = None
 
-    # def __init__(self, session_pool: SessionPool, index: int, template_engine: TemplateEngine):
-    def __init__(self, session_pool: Any, index: int, template_engine: TemplateEngine):
+    # def __init__(self, template_engine: TemplateEngine, session_pool: SessionPool, index: int):
+    def __init__(self, template_engine: TemplateEngine, session_pool=None, index=-1):
         """
         Init SQLSession
         :param session_pool: session_pool Convenient to close the session
         :param index: The database connection index being used
         :param template_engine: sql engine
         """
-        self._session_pool = session_pool
-        self._index = index
         self._engine = template_engine
+        if session_pool is not None and index != -1:
+            self._session_pool = session_pool
+            self._index = index
+
+            def commit():
+                """
+                Commit session
+                """
+                self._session_pool.commit_session(self._index)
+            self.commit = commit
+
+            def rollback():
+                """
+                Rollback session
+                """
+                self._session_pool.rollback_session(self._index)
+            self.rollback = rollback
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self._index = -1
         self._engine.destruction()
         self._engine = None
-        self._session_pool.give_back_session(self._index)
-        self._session_pool = None
-
-    def commit(self):
-        """
-        Commit session
-        """
-        self._session_pool.commit_session(self._index)
-
-    def rollback(self):
-        """
-        Rollback session
-        """
-        self._session_pool.rollback_session(self._index)
+        if self._session_pool is not None:
+            self._session_pool.give_back_session(self._index)
+            self._session_pool = None
+        self._index = -1
 
     def service(self, config: dict) -> Service:
         """

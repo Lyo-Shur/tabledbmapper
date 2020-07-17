@@ -3,25 +3,13 @@ from tabledbmapper.logger import DefaultLogger, Logger
 from tabledbmapper.manager.manager import Manager
 from tabledbmapper.manager.mvc.dao import DAO
 from tabledbmapper.manager.mvc.service import Service
+from tabledbmapper.manager.session.decorators.sql_session import sqlsession
 from tabledbmapper.manager.session.pool import SessionPool
 from tabledbmapper.manager.session.sql_session import SQLSession
 from tabledbmapper.manager.session.sql_session_factory import SQLSessionFactory, SQLSessionFactoryBuild
 
 from tabledbmapper.sql_builder import builder
 from tabledbmapper.manager.xml_config import parse_config_from_string, parse_config_from_file
-
-ConnHandle = ConnHandle
-ExecuteEngine = ExecuteEngine
-TemplateEngine = TemplateEngine
-Logger = Logger
-DefaultLogger = DefaultLogger
-Manager = Manager
-DAO = DAO
-Service = Service
-SessionPool = SessionPool
-SQLSession = SQLSession
-SQLSessionFactory = SQLSessionFactory
-SQLSessionFactoryBuild = SQLSessionFactoryBuild
 
 
 def render_sql_template(template: str, parameter):

@@ -84,7 +84,7 @@ class SessionPool:
                 )
                 template_engine.set_logger(self._logger)
                 self._lock.release()
-                return SQLSession(self, conns_length, template_engine)
+                return SQLSession(template_engine, self, conns_length)
             if flags_length > 0:
                 # set use flag
                 index = self._flags[0]
@@ -102,7 +102,7 @@ class SessionPool:
                 )
                 template_engine.set_logger(self._logger)
                 self._lock.release()
-                return SQLSession(self, index, template_engine)
+                return SQLSession(template_engine, self, index)
 
     def commit_session(self, index: int):
         """

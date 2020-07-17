@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Any
 
 from tabledbmapper.manager.session.sql_session import SQLSession
 
@@ -28,32 +28,20 @@ class SQLSessionFactory:
         self._session_pool = SessionPool(conn_handle, execute_engine, lazy_init, max_conn_number)
         self._logger = logger
 
-    def open_simple_session(self, handle: Callable[[SQLSession], None]) -> bool:
+    def open_session(self, handle: Callable[[SQLSession], None]) -> Any:
         """
         Open a session
         :param handle: session operation
-        :return: SQL Session
-        """
-        def _error_handle(e: BaseException):
-            self._logger.print_error(e)
-        return self.open_session(handle, _error_handle)
-
-    def open_session(self, handle: Callable[[SQLSession], None], error_handle: Callable[[BaseException], None]) -> bool:
-        """
-        Open a session
-        :param handle: session operation
-        :param error_handle: error handle
         :return: SQL Session
         """
         with self._session_pool.get_session(False) as session:
             try:
                 handle(session)
                 session.commit()
-                return True
+                return None
             except Exception as e:
                 session.rollback()
-                error_handle(e)
-        return False
+                return e
 
 
 class SQLSessionFactoryBuild:
