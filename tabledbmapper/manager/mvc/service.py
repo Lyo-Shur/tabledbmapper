@@ -36,6 +36,17 @@ class Service:
         """
         return self._dao.get_list(parameter)
 
+    def get_first(self, parameter: Dict) -> dict:
+        """
+        Get data list, then go back to the first record
+        :param parameter: Search parameters
+        :return: First Data
+        """
+        data_list = self.get_list(parameter)
+        if len(data_list) == 0:
+            return {}
+        return data_list[0]
+
     def get_count(self, parameter: Dict) -> CountResult:
         """
         Quantity acquisition
@@ -43,6 +54,14 @@ class Service:
         :return: Number
         """
         return self._dao.get_count(parameter)
+
+    def exist(self, parameter: Dict) -> bool:
+        """
+        Quantity acquisition, judge whether the quantity is greater than 0
+        :param parameter: Search parameters
+        :return: Number
+        """
+        return self.get_count(parameter) > 0
 
     def get_model(self, parameter: Dict) -> Dict:
         """
