@@ -2,8 +2,6 @@ from tabledbmapper.logger import Logger
 
 from tabledbmapper.engine import TemplateEngine
 from tabledbmapper.manager.manager import Manager
-from tabledbmapper.manager.mvc.dao import DAO
-from tabledbmapper.manager.mvc.service import Service
 from tabledbmapper.manager.xml_config import parse_config_from_string, parse_config_from_file
 
 
@@ -64,54 +62,6 @@ class SQLSession:
         """
         self._engine.set_logger(logger)
         return self
-
-    def service(self, config: dict) -> Service:
-        """
-        Assemble upward as a service
-        :param config XmlConfig
-        :return: service
-        """
-        return Service(self.dao(config))
-
-    def service_by_string(self, config_string: str) -> Service:
-        """
-        Assemble upward as a service
-        :param config_string xml string
-        :return: service
-        """
-        return Service(self.dao_by_string(config_string))
-
-    def service_by_file(self, config_file: str) -> Service:
-        """
-        Assemble upward as a service
-        :param config_file xml file
-        :return: service
-        """
-        return Service(self.dao_by_file(config_file))
-
-    def dao(self, config: dict) -> DAO:
-        """
-        Assemble upward as a dao
-        :param config XmlConfig
-        :return: dao
-        """
-        return DAO(self.manager(config))
-
-    def dao_by_string(self, config_string: str) -> DAO:
-        """
-        Assemble upward as a dao
-        :param config_string xml string
-        :return: dao
-        """
-        return DAO(self.manager_by_string(config_string))
-
-    def dao_by_file(self, config_file: str) -> DAO:
-        """
-        Assemble upward as a dao
-        :param config_file xml file
-        :return: dao
-        """
-        return DAO(self.manager_by_file(config_file))
 
     def manager(self, config: dict) -> Manager:
         """
