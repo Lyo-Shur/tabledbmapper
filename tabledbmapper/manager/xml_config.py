@@ -23,6 +23,7 @@ def parse_config_from_file(file_path: str) -> XmlConfig:
     return _parse_config_from_doc(parse(file_path))
 
 
+# noinspection SpellCheckingInspection
 def _parse_config_from_doc(doc: Any) -> XmlConfig:
     """
     Parsing DOC documents

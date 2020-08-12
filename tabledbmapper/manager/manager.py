@@ -5,6 +5,7 @@ from tabledbmapper.logger import Logger
 from tabledbmapper.manager.xml_config import XmlConfig
 
 
+# noinspection SpellCheckingInspection
 class Manager:
     # SQL template execution engine
     _template_engine = None

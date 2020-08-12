@@ -6,6 +6,7 @@ import re
 SQLRenderResult = Tuple[str, list]
 
 
+# noinspection SpellCheckingInspection
 def builder(template: str, parameter: Dict) -> SQLRenderResult:
     """
     Build SQL string
@@ -28,6 +29,7 @@ def builder(template: str, parameter: Dict) -> SQLRenderResult:
     return result, parameters
 
 
+# noinspection SpellCheckingInspection
 def _parsing(template: str) -> str:
     """
     Extend the native jinja2 syntax to support parameterized queries

@@ -9,6 +9,7 @@ from tabledbmapper.manager.session.sql_session_factory import SQLSessionFactory
 SessionResult = Dict
 
 
+# noinspection SpellCheckingInspection
 # Add a decorator to the method to automatically open the session when you enter the method
 def sqlsession(factory: SQLSessionFactory) -> Callable:
     # Gets the session factory location

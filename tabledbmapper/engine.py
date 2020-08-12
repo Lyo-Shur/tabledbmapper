@@ -83,6 +83,7 @@ class ExecuteEngine:
         """
 
 
+# noinspection SpellCheckingInspection
 class TemplateEngine:
     """
     SQL template execution engine
